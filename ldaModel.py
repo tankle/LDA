@@ -4,6 +4,9 @@ __author__ = 'tan'
 import random
 
 class LDA(object):
+    '''
+    Gibbs LDA
+    '''
 
     def __init__(self, topics=10, alpha=0.1, beta=0.1, iter_num=100, top_words=10, random_state=None):
 
@@ -190,18 +193,70 @@ class LDA(object):
 
         return theta
 
-    def get_result(self, top_words=10):
+    def save_model(self, file_prefix):
+        with open(file_prefix+".theta", "w") as f:
+            for i in xrange(self.dataset.M):
+                for j in xrange(self.T):
+                    f.write(str(self.theta[i][j]) + " ")
+                f.write("\n")
+
+        with open(file_prefix+".phi", "w") as f:
+            for i in xrange(self.T):
+                for j in xrange(self.dataset.V):
+                    f.write(str(self.phi[i][j]) + " ")
+                f.write("\n")
+
+        with open(file_prefix+".topwords", "w") as f:
+            if self.top_words > self.dataset.V:
+                self.top_words = self.dataset.V
+
+            for topic in xrange(self.T):
+                f.write('Topic '+str(topic)+'th:\n')
+                topic_words = []
+                for y in xrange(self.dataset.V):
+                    topic_words.append((y, self.phi[topic][y]))
+                #quick-sort
+                topic_words.sort(key=lambda x: x[1], reverse=True)
+                for y in xrange(self.top_words):
+                    word = self.dataset.id2word[topic_words[y][0]]
+                    f.write('\t'+word+'\t'+str(topic_words[y][1])+'\n')
+
+        with open(file_prefix+'.others', 'w') as fothers:
+            fothers.write('alpha = '+str(self.alpha)+'\n')
+            fothers.write('beta = '+str(self.beta)+'\n')
+            fothers.write('ntopics = '+str(self.T)+'\n')
+            fothers.write('ndocs = '+str(self.dataset.M)+'\n')
+            fothers.write('nwords = '+str(self.dataset.V)+'\n')
+            fothers.write('liter = '+str(self.iter_num)+'\n')
+        pass
+
+
+    def get_result(self):
         print("----doc-topic matrix result----")
         for i in xrange(self.dataset.M):
             print "doc: %d topic: " % i,
+            topics = []
+            for y in xrange(self.T):
+                topics.append((y, self.theta[i][y]))
+            #quick-sort
+            topics.sort(key=lambda x: x[1], reverse=True)
             for j in xrange(self.T):
-                print j, ":", str(self.theta[i][j])+" ",
+                print topics[j][0], ":", str(topics[j][1])+" ",
             print("")
 
 
         print("\n\n----topic-word matrix result----")
+        if self.top_words > self.dataset.V:
+            self.top_words = self.dataset.V
+
         for i in xrange(self.T):
             print "topic: %d words: " % i,
-            for j in xrange(self.dataset.V):
-                print self.dataset.id2word[j], ":", (self.phi[i][j]), " ",
+            topic_words = []
+            for y in xrange(self.dataset.V):
+                topic_words.append((y, self.phi[i][y]))
+            #quick-sort
+            topic_words.sort(key=lambda x: x[1], reverse=True)
+
+            for j in xrange(self.top_words):
+                print self.dataset.id2word[topic_words[j][0]], ":", (topic_words[j][1]), " ",
             print("")

@@ -20,4 +20,7 @@ MCMC讲的比较好
 
 这篇[笔记也不错](https://www.zybuluo.com/Hederahelix/note/102857)
 
+[Introduction to Probabilistic Topic Models](http://www.cs.princeton.edu/~blei/papers/Blei2012.pdf)
+[译文](http://www.cnblogs.com/siegfang/archive/2013/01/30/2882391.html)
+
 还有就是复旦教授吴立德的[LDA视频](http://www.youku.com/playlist_show/id_22935176.html)，也是非常不错，吴老师一步一步在黑板上板书推导。
